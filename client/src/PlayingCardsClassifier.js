@@ -3,29 +3,54 @@ import axios from 'axios';
 import Webcam from 'react-webcam';
 import './PlayingCardsClassifier.css'
 
+const dataURLToFile = (dataURL, filename) => {
+  return fetch(dataURL)
+    .then(res => res.blob())
+    .then(blob => new File([blob], filename, { type: blob.type }));
+};
+
 const PhotoUploadOrCapture = ({ onImageSubmit }) => {
   const webcamRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isWebcamOpen, setIsWebcamOpen] = useState(false);
   const [fileInputLabel, setFileInputLabel] = useState("No file chosen");
 
+  // const capture = () => {
+  //   const imageSrc = webcamRef.current.getScreenshot();
+  //   setSelectedImage(imageSrc);
+  //   setFileInputLabel("Image Captured");
+  //   onImageSubmit(imageSrc);
+  //   setIsWebcamOpen(false); // close the webcam after capturing the image
+  // };
+
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
-    setSelectedImage(imageSrc);
-    setFileInputLabel("Image Captured");
-    onImageSubmit(imageSrc);
-    setIsWebcamOpen(false); // close the webcam after capturing the image
+    dataURLToFile(imageSrc, 'captured-image.jpg').then(file => {
+      setSelectedImage(imageSrc);
+      setFileInputLabel("Image Captured");
+      onImageSubmit(file);
+      setIsWebcamOpen(false); // Close the webcam after capturing the image
+    });
   };
+
+  // const handleFileUpload = (event) => {
+  //   const file = event.target.files[0];
+  //   const reader = new FileReader();
+  //   reader.onloadend = () => {
+  //     setSelectedImage(reader.result);
+  //     setFileInputLabel(file.name);
+  //     onImageSubmit(reader.result);
+  //   };
+  //   reader.readAsDataURL(file);
+  // };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setSelectedImage(reader.result);
+    if (file) {
+      setSelectedImage(URL.createObjectURL(file)); // Preview image
       setFileInputLabel(file.name);
-      onImageSubmit(reader.result);
-    };
-    reader.readAsDataURL(file);
+      onImageSubmit(file); // Pass the File object to onImageSubmit
+    }
   };
 
   const handleOpenWebcam = () => {
@@ -101,8 +126,14 @@ const PlayingCardsClassifier = () => {
   const [serverStatus, setServerStatus] = useState("");
 
   const handleImageSubmit = (image) => {
-    setFile(image);
-    sendToBackend(image);
+    // setFile(image);
+    // sendToBackend(image);
+
+    if (image instanceof Blob || image instanceof File) {
+      sendToBackend(image);
+    } else {
+      dataURLToFile(image, 'image.jpg').then(file => sendToBackend(file));
+    }
   };
 
   // const sendToBackend = async (image) => {
@@ -146,6 +177,7 @@ const PlayingCardsClassifier = () => {
       // Make POST request using axios
       const res = await axios.post('https://playing-cards-classifier.onrender.com/predict', formData, {
         headers: {
+          'Content-Type': 'multipart/form-data'
         },
       });
 
