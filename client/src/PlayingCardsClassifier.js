@@ -121,13 +121,14 @@ const PlayingCardsClassifier = () => {
       });
       
       if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`)
+        const errorText = await res.text()
+        throw new Error(`HTTP error! status: ${res.status}, response: ${errorText}`)
       }
       const data = await res.json();
       setResult(data.prediction);
       setServerStatus("");
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Detailed error:", error.message);
       setServerStatus("Server offline. Please try again later.");
     }
   };  
