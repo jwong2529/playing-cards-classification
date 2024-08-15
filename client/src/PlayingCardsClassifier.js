@@ -115,7 +115,7 @@ const PlayingCardsClassifier = () => {
       const formData = new FormData();
       formData.append('file', blob, 'image.jpg'); // append the file to FormData
   
-      const res = await fetch('https://playing-cards-classification-c2cwovoa6-janice-wongs-projects.vercel.app/api/predict', {
+      const res = await fetch('https://playing-cards-classification-c2cwovoa6-janice-wongs-projects.vercel.app/predict', {
         method: 'POST',
         body: formData // send the FormData object
       });
