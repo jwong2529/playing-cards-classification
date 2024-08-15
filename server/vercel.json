@@ -5,7 +5,7 @@
         "src": "api/index.py",
         "use": "@vercel/python",
         "config": {
-          "pythonVersion": "3.9"
+          "runtime": "python3.9"
         }
       }
     ],
