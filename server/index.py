@@ -8,9 +8,10 @@ from PIL import Image
 from io import BytesIO
 
 app = Flask(__name__)
-CORS(app, origins=["https://playing-cards-classifier.vercel.app",
-                   "https://playing-cards-classifier-client-janice-wongs-projects.vercel.app/"
-                   ])  # allow requests from the React frontend
+# CORS(app, origins=["https://playing-cards-classifier.vercel.app",
+#                    "https://playing-cards-classifier-client-janice-wongs-projects.vercel.app/"
+#                    ])  # allow requests from the React frontend
+CORS(app, origins=["*"])
 
 print(tf.__version__)
 
