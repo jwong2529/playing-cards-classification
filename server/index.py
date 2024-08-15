@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import numpy as np
 import tensorflow as tf
@@ -8,10 +8,9 @@ from PIL import Image
 from io import BytesIO
 
 app = Flask(__name__)
-# CORS(app, origins=["https://playing-cards-classifier.vercel.app",
-#                    "https://playing-cards-classifier-client-janice-wongs-projects.vercel.app/"
-#                    ])  # allow requests from the React frontend
-CORS(app, origins=["*"])
+CORS(app, origins=["https://playing-cards-classifier.vercel.app",
+                   "https://playing-cards-classifier-client-janice-wongs-projects.vercel.app/"
+                   ])  # allow requests from the React frontend
 
 print(tf.__version__)
 
@@ -52,6 +51,10 @@ def preprocess_image(image_data):
     image_array = np.expand_dims(image_array, axis=0)  # add batch dimension
     return image_array
 
+@app.route("/")
+def connect():
+    return render_template("index.html")
+
 @app.route('/predict', methods=['POST'])
 def predict():
     print("Received a prediction request...")
@@ -89,4 +92,4 @@ if __name__ == '__main__':
     import os
     port = int(os.environ.get('PORT', 10000))  # default to 10000 if PORT is not set
     print(f"Server is running on port {port}...")
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)
