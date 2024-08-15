@@ -15,42 +15,23 @@ const PhotoUploadOrCapture = ({ onImageSubmit }) => {
   const [isWebcamOpen, setIsWebcamOpen] = useState(false);
   const [fileInputLabel, setFileInputLabel] = useState("No file chosen");
 
-  // const capture = () => {
-  //   const imageSrc = webcamRef.current.getScreenshot();
-  //   setSelectedImage(imageSrc);
-  //   setFileInputLabel("Image Captured");
-  //   onImageSubmit(imageSrc);
-  //   setIsWebcamOpen(false); // close the webcam after capturing the image
-  // };
-
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
-    dataURLToFile(imageSrc, 'captured-image.jpg').then(file => {
-      setSelectedImage(imageSrc);
-      setFileInputLabel("Image Captured");
-      onImageSubmit(file);
-      setIsWebcamOpen(false); // Close the webcam after capturing the image
-    });
+    setSelectedImage(imageSrc);
+    setFileInputLabel("Image Captured");
+    onImageSubmit(imageSrc);
+    setIsWebcamOpen(false); // close the webcam after capturing the image
   };
-
-  // const handleFileUpload = (event) => {
-  //   const file = event.target.files[0];
-  //   const reader = new FileReader();
-  //   reader.onloadend = () => {
-  //     setSelectedImage(reader.result);
-  //     setFileInputLabel(file.name);
-  //     onImageSubmit(reader.result);
-  //   };
-  //   reader.readAsDataURL(file);
-  // };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
-    if (file) {
-      setSelectedImage(URL.createObjectURL(file)); // Preview image
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setSelectedImage(reader.result);
       setFileInputLabel(file.name);
-      onImageSubmit(file); // Pass the File object to onImageSubmit
-    }
+      onImageSubmit(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleOpenWebcam = () => {
@@ -122,19 +103,13 @@ const PhotoUploadOrCapture = ({ onImageSubmit }) => {
 
 const PlayingCardsClassifier = () => {
   const [file, setFile] = useState(null);
-  const [result, setResult] = useState("");
+  // const [result, setResult] = useState("");
+  const [response, setResponse] = useState('');
   const [serverStatus, setServerStatus] = useState("");
 
-  const handleImageSubmit = (image) => {
-    // setFile(image);
-    // sendToBackend(image);
-
-    if (image instanceof Blob || image instanceof File) {
-      sendToBackend(image);
-    } else {
-      dataURLToFile(image, 'image.jpg').then(file => sendToBackend(file));
-    }
-  };
+  // const handleImageSubmit = (image) => {
+  //   sendToBackend(image);
+  // };
 
   // const sendToBackend = async (image) => {
   //   try {
@@ -167,25 +142,44 @@ const PlayingCardsClassifier = () => {
   //   }
   // };
 
-  const sendToBackend = async (file) => {
-    try {
+  // const sendToBackend = async (file) => {
+  //   try {
       
-      // Create FormData object
-      const formData = new FormData();
-      formData.append('file', file); // Append the file to FormData
+  //     // Create FormData object
+  //     const formData = new FormData();
+  //     formData.append('file', file); // Append the file to FormData
 
-      // Make POST request using axios
+  //     // Make POST request using axios
+  //     const res = await axios.post('https://playing-cards-classifier.onrender.com/predict', formData, {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data'
+  //       },
+  //     });
+
+  //     setResult(res.data.prediction);
+  //     setServerStatus("");
+  //   } catch (error) {
+  //     console.error("Detailed error:", error.message);
+  //     setServerStatus("Server offline. Please try again later.");
+  //   }
+  // };
+
+  const handleImageSubmit = async (e) => {
+    e.preventDefault();
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
       const res = await axios.post('https://playing-cards-classifier.onrender.com/predict', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
         },
       });
-
-      setResult(res.data.prediction);
-      setServerStatus("");
+      setResponse(res.data);
     } catch (error) {
-      console.error("Detailed error:", error.message);
-      setServerStatus("Server offline. Please try again later.");
+      console.error('Error uploading file:', error);
     }
   };
 
@@ -193,7 +187,7 @@ const PlayingCardsClassifier = () => {
     <div className="app-container">
       <h1>Playing Cards Classifier</h1>
       <PhotoUploadOrCapture onImageSubmit={handleImageSubmit} />
-      {result && <h2>{result}</h2>}
+      {result && <h2>{response}</h2>}
       {serverStatus && <p style={{ color: 'red' }}>{serverStatus}</p>}
     </div>
   );
