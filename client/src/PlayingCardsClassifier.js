@@ -96,10 +96,12 @@ const PhotoUploadOrCapture = ({ onImageSubmit }) => {
 };
 
 const PlayingCardsClassifier = () => {
+  const [file, setFile] = useState(null);
   const [result, setResult] = useState("");
   const [serverStatus, setServerStatus] = useState("");
 
   const handleImageSubmit = (image) => {
+    setFile(image);
     sendToBackend(image);
   };
 
@@ -136,12 +138,10 @@ const PlayingCardsClassifier = () => {
 
   const sendToBackend = async (image) => {
     try {
-      // Convert image data URL to a Blob if necessary
-      const blob = image instanceof Blob ? image : await dataURLToBlob(image);
       
       // Create FormData object
       const formData = new FormData();
-      formData.append('file', blob, 'image.jpg'); // Append the file to FormData
+      formData.append('file', file); // Append the file to FormData
 
       // Make POST request using axios
       const res = await axios.post('https://playing-cards-classifier.onrender.com/predict', formData, {
