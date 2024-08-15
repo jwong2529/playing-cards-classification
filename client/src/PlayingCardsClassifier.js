@@ -107,63 +107,6 @@ const PlayingCardsClassifier = () => {
   const [response, setResponse] = useState('');
   const [serverStatus, setServerStatus] = useState("");
 
-  // const handleImageSubmit = (image) => {
-  //   sendToBackend(image);
-  // };
-
-  // const sendToBackend = async (image) => {
-  //   try {
-  //     // convert image data URL to a Blob
-  //     const response = await fetch(image);
-  //     if (!response.ok) {
-  //       throw new Error("Failed to convert image")
-  //     }
-  //     const blob = await response.blob();
-      
-  //     // create FormData object
-  //     const formData = new FormData();
-  //     formData.append('file', blob, 'image.jpg'); // append the file to FormData
-  
-  //     const res = await fetch('https://playing-cards-classifier.onrender.com/predict', {
-  //       method: 'POST',
-  //       body: formData // send the FormData object
-  //     });
-      
-  //     if (!res.ok) {
-  //       const errorText = await res.text()
-  //       throw new Error(`HTTP error! status: ${res.status}, response: ${errorText}`)
-  //     }
-  //     const data = await res.json();
-  //     setResult(data.prediction);
-  //     setServerStatus("");
-  //   } catch (error) {
-  //     console.error("Detailed error:", error.message);
-  //     setServerStatus("Server offline. Please try again later.");
-  //   }
-  // };
-
-  // const sendToBackend = async (file) => {
-  //   try {
-      
-  //     // Create FormData object
-  //     const formData = new FormData();
-  //     formData.append('file', file); // Append the file to FormData
-
-  //     // Make POST request using axios
-  //     const res = await axios.post('https://playing-cards-classifier.onrender.com/predict', formData, {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data'
-  //       },
-  //     });
-
-  //     setResult(res.data.prediction);
-  //     setServerStatus("");
-  //   } catch (error) {
-  //     console.error("Detailed error:", error.message);
-  //     setServerStatus("Server offline. Please try again later.");
-  //   }
-  // };
-
   const handleImageSubmit = async (e) => {
     e.preventDefault();
     if (!file) return;
@@ -172,12 +115,12 @@ const PlayingCardsClassifier = () => {
     formData.append('file', file);
 
     try {
-      const res = await axios.post('https://playing-cards-classifier.onrender.com/predict', formData, {
+      const response = await axios.post('https://playing-cards-classifier.onrender.com/predict', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      setResponse(res.data);
+      setResponse(response.data);
     } catch (error) {
       console.error('Error uploading file:', error);
     }
