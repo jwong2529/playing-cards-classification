@@ -16,11 +16,11 @@ print("Starting server...")
 
 # load the model architecture and weights
 print("Loading model...")
-with open('../playing-cards-model.json', 'r') as json_file:
+with open('playing-cards-model.json', 'r') as json_file:
     model_json = json_file.read()
 
 model = model_from_json(model_json)
-model.load_weights('../playing-cards-model_weights.h5')
+model.load_weights('playing-cards-model_weights.h5')
 
 IMG_SIZE = (128, 128)  
 
