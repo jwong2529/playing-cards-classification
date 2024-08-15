@@ -99,7 +99,8 @@ const PlayingCardsClassifier = () => {
   const [serverStatus, setServerStatus] = useState("");
 
   const handleImageSubmit = (image) => {
-    sendToBackend(image);
+    // sendToBackend(image);
+    sendDummyData();
   };
 
   const sendToBackend = async (image) => {
@@ -131,7 +132,31 @@ const PlayingCardsClassifier = () => {
       console.error("Detailed error:", error.message);
       setServerStatus("Server offline. Please try again later.");
     }
-  };  
+  };
+  
+  const sendDummyData = async () => {
+    try {
+        // Create FormData object with dummy data
+        const formData = new FormData();
+        formData.append('file', new Blob(['dummy data'], { type: 'text/plain' }), 'dummy.txt'); // Append dummy data
+
+        const res = await fetch('https://playing-cards-classifier.onrender.com/predict', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json',
+            }
+        });
+
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        console.log(data); // Check the response data
+    } catch (error) {
+        console.error("Error:", error);
+    }
+};
 
   return (
     <div className="app-container">
@@ -142,5 +167,7 @@ const PlayingCardsClassifier = () => {
     </div>
   );
 };
+
+
 
 export default PlayingCardsClassifier;
