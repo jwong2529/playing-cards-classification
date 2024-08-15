@@ -11,7 +11,8 @@ app = Flask(__name__)
 # CORS(app, origins=["https://playing-cards-classifier.vercel.app",
 #                    "https://playing-cards-classifier-client-janice-wongs-projects.vercel.app/"
 #                    ])  # allow requests from the React frontend
-CORS(app)
+# CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://playing-cards-classifier.vercel.app"}})
 
 print(tf.__version__)
 
