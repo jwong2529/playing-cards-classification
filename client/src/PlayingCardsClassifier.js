@@ -136,7 +136,7 @@ const PlayingCardsClassifier = () => {
   //   }
   // };
 
-  const sendToBackend = async (image) => {
+  const sendToBackend = async (file) => {
     try {
       
       // Create FormData object
