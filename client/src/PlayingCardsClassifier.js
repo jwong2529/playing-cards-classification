@@ -121,6 +121,7 @@ const PlayingCardsClassifier = () => {
       });
       
       if (!res.ok) {
+        console.log("error with res")
         const errorText = await res.text()
         throw new Error(`HTTP error! status: ${res.status}, response: ${errorText}`)
       }
