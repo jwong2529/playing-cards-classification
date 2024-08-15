@@ -83,5 +83,7 @@ def predict():
     return jsonify({'prediction': predicted_label, 'confidence': float(confidence)})
 
 if __name__ == '__main__':
-    print("Server is running...")
-    app.run(debug=True)
+    import os
+    port = int(os.environ.get('PORT', 10000))  # default to 10000 if PORT is not set
+    print(f"Server is running on port {port}...")
+    app.run(host='0.0.0.0', port=port, debug=True)
