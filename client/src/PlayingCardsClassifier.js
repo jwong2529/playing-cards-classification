@@ -130,7 +130,7 @@ const PlayingCardsClassifier = () => {
     <div className="app-container">
       <h1>Playing Cards Classifier</h1>
       <PhotoUploadOrCapture onImageSubmit={handleImageSubmit} />
-      {result && <h2>{response}</h2>}
+      {response && <h2>{response}</h2>}
       {serverStatus && <p style={{ color: 'red' }}>{serverStatus}</p>}
     </div>
   );
