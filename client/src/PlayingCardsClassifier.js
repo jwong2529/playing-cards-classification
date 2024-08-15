@@ -146,7 +146,6 @@ const PlayingCardsClassifier = () => {
       // Make POST request using axios
       const res = await axios.post('https://playing-cards-classifier.onrender.com/predict', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
         },
       });
 
@@ -156,11 +155,6 @@ const PlayingCardsClassifier = () => {
       console.error("Detailed error:", error.message);
       setServerStatus("Server offline. Please try again later.");
     }
-  };
-
-  const dataURLToBlob = (dataURL) => {
-    return fetch(dataURL)
-      .then(res => res.blob());
   };
 
   return (
