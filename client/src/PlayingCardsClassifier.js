@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import axios from 'axios';
 import Webcam from 'react-webcam';
 import './PlayingCardsClassifier.css'
 
@@ -99,64 +100,68 @@ const PlayingCardsClassifier = () => {
   const [serverStatus, setServerStatus] = useState("");
 
   const handleImageSubmit = (image) => {
-    // sendToBackend(image);
-    sendDummyData();
+    sendToBackend(image);
   };
+
+  // const sendToBackend = async (image) => {
+  //   try {
+  //     // convert image data URL to a Blob
+  //     const response = await fetch(image);
+  //     if (!response.ok) {
+  //       throw new Error("Failed to convert image")
+  //     }
+  //     const blob = await response.blob();
+      
+  //     // create FormData object
+  //     const formData = new FormData();
+  //     formData.append('file', blob, 'image.jpg'); // append the file to FormData
+  
+  //     const res = await fetch('https://playing-cards-classifier.onrender.com/predict', {
+  //       method: 'POST',
+  //       body: formData // send the FormData object
+  //     });
+      
+  //     if (!res.ok) {
+  //       const errorText = await res.text()
+  //       throw new Error(`HTTP error! status: ${res.status}, response: ${errorText}`)
+  //     }
+  //     const data = await res.json();
+  //     setResult(data.prediction);
+  //     setServerStatus("");
+  //   } catch (error) {
+  //     console.error("Detailed error:", error.message);
+  //     setServerStatus("Server offline. Please try again later.");
+  //   }
+  // };
 
   const sendToBackend = async (image) => {
     try {
-      // convert image data URL to a Blob
-      const response = await fetch(image);
-      if (!response.ok) {
-        throw new Error("Failed to convert image")
-      }
-      const blob = await response.blob();
+      // Convert image data URL to a Blob if necessary
+      const blob = image instanceof Blob ? image : await dataURLToBlob(image);
       
-      // create FormData object
+      // Create FormData object
       const formData = new FormData();
-      formData.append('file', blob, 'image.jpg'); // append the file to FormData
-  
-      const res = await fetch('https://playing-cards-classifier.onrender.com/predict', {
-        method: 'POST',
-        body: formData // send the FormData object
+      formData.append('file', blob, 'image.jpg'); // Append the file to FormData
+
+      // Make POST request using axios
+      const res = await axios.post('https://playing-cards-classifier.onrender.com/predict', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
-      
-      if (!res.ok) {
-        const errorText = await res.text()
-        throw new Error(`HTTP error! status: ${res.status}, response: ${errorText}`)
-      }
-      const data = await res.json();
-      setResult(data.prediction);
+
+      setResult(res.data.prediction);
       setServerStatus("");
     } catch (error) {
       console.error("Detailed error:", error.message);
       setServerStatus("Server offline. Please try again later.");
     }
   };
-  
-  const sendDummyData = async () => {
-    try {
-        // Create FormData object with dummy data
-        const formData = new FormData();
-        formData.append('file', new Blob(['dummy data'], { type: 'text/plain' }), 'dummy.txt'); // Append dummy data
 
-        const res = await fetch('https://playing-cards-classifier.onrender.com/predict', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Accept': 'application/json',
-            }
-        });
-
-        if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        const data = await res.json();
-        console.log(data); // Check the response data
-    } catch (error) {
-        console.error("Error:", error);
-    }
-};
+  const dataURLToBlob = (dataURL) => {
+    return fetch(dataURL)
+      .then(res => res.blob());
+  };
 
   return (
     <div className="app-container">
