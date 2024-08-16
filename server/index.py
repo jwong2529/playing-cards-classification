@@ -70,8 +70,8 @@ def predict():
     processed_image = preprocess_image(file.read())
     
     # # Predict
-    # print("Making prediction...")
-    # predictions = model.predict(processed_image)
+    print("Making prediction...")
+    predictions = model.predict(processed_image)
     # predicted_class = np.argmax(predictions, axis=1)
     # confidence = np.max(predictions)
 
