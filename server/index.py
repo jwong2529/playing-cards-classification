@@ -5,7 +5,7 @@ from model_manager import ModelManager
 app = Flask(__name__)
 CORS(app)
 
-print(tf.__version__)
+# print(tf.__version__)
 
 print("Starting server...")
 
