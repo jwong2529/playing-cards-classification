@@ -1,20 +1,26 @@
 import React, { useRef, useState } from 'react';
 import axios from 'axios';
-import Webcam from 'react-webcam';
+import {Camera} from "react-camera-pro";
 import './PlayingCardsClassifier.css'
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import CircularProgress from '@mui/material/CircularProgress';
 
-const PhotoUploadOrCapture = ({ onImageSubmit }) => {
-  const webcamRef = useRef(null);
+const PhotoUploadOrCapture = ({ onImageSubmit, onOpenCamera }) => {
+  const cameraRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [isWebcamOpen, setIsWebcamOpen] = useState(false);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [fileInputLabel, setFileInputLabel] = useState("No file chosen");
 
-  const capture = () => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    setSelectedImage(imageSrc);
-    setFileInputLabel("Image Captured");
-    onImageSubmit(imageSrc);
-    setIsWebcamOpen(false); // close the webcam after capturing the image
+  const capture = async () => {
+    if (cameraRef.current) {
+      const imageSrc = await cameraRef.current.takePhoto();
+      setSelectedImage(imageSrc);
+      setFileInputLabel("Image Captured");
+      onImageSubmit(imageSrc);
+      setIsCameraOpen(false); //close camera after capturing image
+    }
   };
 
   const handleFileUpload = (event) => {
@@ -28,27 +34,36 @@ const PhotoUploadOrCapture = ({ onImageSubmit }) => {
     reader.readAsDataURL(file);
   };
 
-  const handleOpenWebcam = () => {
-    setIsWebcamOpen(true);
+  const handleOpenCamera = () => {
+    setIsCameraOpen(true);
+    setSelectedImage(null);
+    setFileInputLabel("No file chosen");
+    onOpenCamera();
   };
 
-  const handleCancelWebcam = () => {
-    setIsWebcamOpen(false);
+  const handleCancelCamera = () => {
+    setIsCameraOpen(false);
   };
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <h3>Capture or Upload an Image</h3>
+      <Typography variant="subtitle2" gutterBottom>
+        Capture or Upload an Image
+      </Typography>
 
-      <button onClick={handleOpenWebcam} style={{ marginRight: '10px' }}>Open Camera to Capture Image</button>
-      <button onClick={() => document.getElementById('file-upload').click()}>
-        Upload Photo
-      </button>
+      <Stack direction="row" spacing={2}>
+        <Button onClick={handleOpenCamera} variant="outlined">Open Camera to Capture Image</Button>
+        <Button onClick={() => document.getElementById('file-upload').click()} variant="outlined">
+          Upload Photo
+        </Button>
+        <label htmlFor="file-upload" className="custom-file-upload">
+          <Typography variant="overline" display="block" gutterBottom>
+          {fileInputLabel}
+          </Typography>
+        </label>
+      </Stack>
 
       <div style={{ marginTop: '10px', marginBottom: '10px' }}>
-        <label htmlFor="file-upload" className="custom-file-upload">
-          {fileInputLabel}
-        </label>
         <input
           id="file-upload"
           type="file"
@@ -58,19 +73,20 @@ const PhotoUploadOrCapture = ({ onImageSubmit }) => {
         />
       </div>
 
-      {isWebcamOpen && (
-        <>
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            style={{ marginBottom: '10px' }}
-          />
-          <div>
-            <button onClick={capture} style={{ marginRight: '10px' }}>Capture photo</button>
-            <button onClick={handleCancelWebcam}>Cancel</button>
+      {isCameraOpen && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ width: '350px', height: '210px', position: 'relative', marginBottom: '10px'}}>
+            <Camera
+              ref={cameraRef}
+              aspectRatio={5 / 3}  // Adjust aspect ratio if needed
+              style={{ width: '100%', height: '100%'}}
+            />
           </div>
-        </>
+          <Stack direction="row" spacing={2}>
+            <Button onClick={capture} variant="outlined" color="success">Capture photo</Button>
+            <Button onClick={handleCancelCamera} variant="outlined" color="error">Cancel</Button>
+          </Stack>
+        </div>
       )}
 
       {selectedImage && (
@@ -105,8 +121,10 @@ const PlayingCardsClassifier = () => {
   const [file, setFile] = useState(null);
   const [response, setResponse] = useState('');
   const [serverStatus, setServerStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleImageSubmit = async (imageDataURL) => {
+    setLoading(true);
     const file = await dataURLToFile(imageDataURL, 'image.jpg');
     const formData = new FormData();
     formData.append('file', file);
@@ -119,22 +137,59 @@ const PlayingCardsClassifier = () => {
     });
     const { prediction, confidence } = response.data;
     const roundedConfidence = confidence.toFixed(2);
-    setResponse(`Prediction: ${prediction}, Confidence: ${roundedConfidence}`);
+    setResponse({ prediction, confidence: roundedConfidence });
+    setServerStatus("");
     } catch (error) {
       console.error('Error uploading file:', error);
+      setServerStatus("Server is offline. Please try again later.")
+      setResponse('');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleOpenCamera = () => {
+    setResponse('');
+    setServerStatus('');
+  }
+
+  const getConfidenceColor = (confidence) => {
+    if (confidence >= 0.8) return 'green'; //high confidence
+    if (confidence >= 0.5) return 'orange'; //medium confidence
+    return 'red'; //low confidence
+  }
+
   return (
     <div className="app-container">
-      <h1>Playing Cards Classifier</h1>
-      <PhotoUploadOrCapture onImageSubmit={handleImageSubmit} />
-      {response && <h2>{response}</h2>}
-      {serverStatus && <p style={{ color: 'red' }}>{serverStatus}</p>}
+      <Typography variant="button" fontWeight={'fontWeightBold'} fontSize={28} gutterBottom>
+         Playing Cards Classifier 
+      </Typography>
+      <PhotoUploadOrCapture onImageSubmit={handleImageSubmit} onOpenCamera={handleOpenCamera} />
+
+      {loading && (
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <CircularProgress />
+        </div>
+      )}
+
+      {response && typeof response === 'object' && (
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <Typography variant="h6" style={{ color: 'blue' }}>
+            Prediction: {response.prediction}
+          </Typography>
+          <Typography variant="h6" style={{ color: getConfidenceColor(response.confidence) }}>
+            Confidence: {response.confidence}
+          </Typography>
+        </div>
+      )}
+
+      {serverStatus && (
+        <Typography variant="h6" style={{ color: 'red', textAlign: 'center', marginTop: '20px' }}>
+          {serverStatus}
+        </Typography>
+      )}
     </div>
   );
 };
-
-
 
 export default PlayingCardsClassifier;
