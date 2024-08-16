@@ -110,6 +110,7 @@ from tensorflow.keras.models import model_from_json
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 from PIL import Image
 from io import BytesIO
+from tensorflow.keras import backend as K
 import threading
 
 # Disable eager execution to run in graph mode
@@ -201,6 +202,8 @@ def predict():
     predictions = model_singleton.predict(processed_image)
     predicted_class = np.argmax(predictions, axis=1)
     confidence = np.max(predictions)
+    K.clear_session()
+
 
     # display class if model has at least 40% confidence in its prediction
     confidence_threshold = 0.40
