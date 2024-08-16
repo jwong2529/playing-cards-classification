@@ -1,7 +1,4 @@
 import os
-# import json
-# from pathlib import Path
-# import logging
 from flask import Flask, request, jsonify, render_template, url_for
 from flask_cors import CORS
 import numpy as np
@@ -11,11 +8,6 @@ from PIL import Image
 from io import BytesIO
 import random
 
-# Initialize logger
-# logging.basicConfig(level=logging.INFO)
-# logger = logging.getLogger(__name__)
-
-# Initialize Flask app
 app = Flask(__name__)
 CORS(app)
 
@@ -53,9 +45,8 @@ def load_model():
     print("Model loaded successfully.")
 
 def preprocess_image(image_data):
-    """Preprocess the image to the required size and format for the model."""
     image = Image.open(BytesIO(image_data)).convert('RGB')
-    image = image.resize(IMG_SIZE)
+    image = image.resize(IMG_SIZE, Image.LANCZOS)
     image_array = np.array(image) / 255.0  # normalize pixel values to [0, 1]
     image_array = np.expand_dims(image_array, axis=0)  # add batch dimension
     return image_array
@@ -88,7 +79,7 @@ def predict():
     confidence = np.max(predictions)
 
     # Display class if model has at least 40% confidence in its prediction
-    confidence_threshold = 0.40
+    confidence_threshold = 0.20
     if confidence < confidence_threshold:
         predicted_label = "no prediction"
     else:

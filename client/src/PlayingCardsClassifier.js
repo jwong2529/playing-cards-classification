@@ -181,7 +181,7 @@ const PlayingCardsClassifier = () => {
 
   const getConfidenceColor = (confidence) => {
     if (confidence >= 0.8) return 'green'; //high confidence
-    if (confidence >= 0.5) return 'orange'; //medium confidence
+    if (confidence >= 0.4) return 'orange'; //medium confidence
     return 'red'; //low confidence
   }
 
