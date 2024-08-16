@@ -22,7 +22,8 @@ with open('playing-cards-model.json', 'r') as json_file:
 model = model_from_json(model_json)
 model.load_weights('playing-cards-model_weights.h5')
 
-# save teh tensorflow graph
+# save the tensorflow graph
+tf.compat.v1.disable_eager_execution()
 graph = tf.compat.v1.get_default_graph()
 
 IMG_SIZE = (128, 128)  
