@@ -66,25 +66,31 @@ def predict():
         print("No file selected")
         return jsonify({'error': 'No file selected'}), 400
     
-    # preprocess the image
-    processed_image = preprocess_image(file.read())
+    # # preprocess the image
+    # processed_image = preprocess_image(file.read())
     
-    # Predict
-    print("Making prediction...")
-    predictions = model.predict(processed_image)
-    predicted_class = np.argmax(predictions, axis=1)
-    confidence = np.max(predictions)
+    # # Predict
+    # print("Making prediction...")
+    # predictions = model.predict(processed_image)
+    # predicted_class = np.argmax(predictions, axis=1)
+    # confidence = np.max(predictions)
 
-    # display class if model has at least 40% confidence in its prediction
-    confidence_threshold = 0.40
-    if confidence < confidence_threshold:
-        predicted_label = "no prediction"
-    else:
-        predicted_label = class_labels[predicted_class[0]]  # map index to label
+    # # display class if model has at least 40% confidence in its prediction
+    # confidence_threshold = 0.40
+    # if confidence < confidence_threshold:
+    #     predicted_label = "no prediction"
+    # else:
+    #     predicted_label = class_labels[predicted_class[0]]  # map index to label
     
-    print(f"Prediction: {predicted_label}, Confidence: {float(confidence)}")
+    # print(f"Prediction: {predicted_label}, Confidence: {float(confidence)}")
     
-    return jsonify({'prediction': predicted_label, 'confidence': float(confidence)})
+    # return jsonify({'prediction': predicted_label, 'confidence': float(confidence)})
+
+     # Just return the filename and size of the file for testing
+    print(f"File received: {file.filename}, Size: {len(file.read())} bytes")
+    
+    # For testing purposes, just return a static JSON response
+    return jsonify({'message': 'File received and processed successfully', 'filename': file.filename})
 
 if __name__ == '__main__':
     import os

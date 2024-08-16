@@ -103,7 +103,6 @@ const dataURLToFile = (dataURL, filename) => {
 
 const PlayingCardsClassifier = () => {
   const [file, setFile] = useState(null);
-  // const [result, setResult] = useState("");
   const [response, setResponse] = useState('');
   const [serverStatus, setServerStatus] = useState("");
 
