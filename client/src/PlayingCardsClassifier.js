@@ -3,12 +3,6 @@ import axios from 'axios';
 import Webcam from 'react-webcam';
 import './PlayingCardsClassifier.css'
 
-const dataURLToFile = (dataURL, filename) => {
-  return fetch(dataURL)
-    .then(res => res.blob())
-    .then(blob => new File([blob], filename, { type: blob.type }));
-};
-
 const PhotoUploadOrCapture = ({ onImageSubmit }) => {
   const webcamRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -101,16 +95,20 @@ const PhotoUploadOrCapture = ({ onImageSubmit }) => {
   );
 };
 
+const dataURLToFile = (dataURL, filename) => {
+  return fetch(dataURL)
+    .then(res => res.blob())
+    .then(blob => new File([blob], filename, { type: blob.type }));
+};
+
 const PlayingCardsClassifier = () => {
   const [file, setFile] = useState(null);
   // const [result, setResult] = useState("");
   const [response, setResponse] = useState('');
   const [serverStatus, setServerStatus] = useState("");
 
-  const handleImageSubmit = async (e) => {
-    e.preventDefault();
-    if (!file) return;
-
+  const handleImageSubmit = async (imageDataURL) => {
+    const file = await dataURLToFile(imageDataURL, 'image.jpg');
     const formData = new FormData();
     formData.append('file', file);
 
