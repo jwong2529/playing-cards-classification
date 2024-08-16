@@ -22,9 +22,9 @@ with open('playing-cards-model.json', 'r') as json_file:
 model = model_from_json(model_json)
 model.load_weights('playing-cards-model_weights.h5')
 
-# save the tensorflow graph
-tf.compat.v1.disable_eager_execution()
-graph = tf.compat.v1.get_default_graph()
+# # save the tensorflow graph
+# tf.compat.v1.disable_eager_execution()
+# graph = tf.compat.v1.get_default_graph()
 
 IMG_SIZE = (128, 128)  
 
@@ -74,23 +74,23 @@ def predict():
     processed_image = preprocess_image(file.read())
     
     # use saved graph for inference
-    with graph.as_default():
+    # with graph.as_default():
         # Predict
-        print("Making prediction...")
-        predictions = model.predict(processed_image)
-        predicted_class = np.argmax(predictions, axis=1)
-        confidence = np.max(predictions)
+    print("Making prediction...")
+    predictions = model.predict(processed_image)
+    predicted_class = np.argmax(predictions, axis=1)
+    confidence = np.max(predictions)
 
-        # display class if model has at least 40% confidence in its prediction
-        confidence_threshold = 0.40
-        if confidence < confidence_threshold:
-            predicted_label = "no prediction"
-        else:
-            predicted_label = class_labels[predicted_class[0]]  # map index to label
-        
-        print(f"Prediction: {predicted_label}, Confidence: {float(confidence)}")
-        
-        return jsonify({'prediction': predicted_label, 'confidence': float(confidence)})
+    # display class if model has at least 40% confidence in its prediction
+    confidence_threshold = 0.40
+    if confidence < confidence_threshold:
+        predicted_label = "no prediction"
+    else:
+        predicted_label = class_labels[predicted_class[0]]  # map index to label
+    
+    print(f"Prediction: {predicted_label}, Confidence: {float(confidence)}")
+    
+    return jsonify({'prediction': predicted_label, 'confidence': float(confidence)})
 
 if __name__ == '__main__':
     import os
