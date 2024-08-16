@@ -113,7 +113,7 @@ from io import BytesIO
 import threading
 
 # Disable eager execution to run in graph mode
-tf.compat.v1.disable_eager_execution()
+# tf.compat.v1.disable_eager_execution()
 
 app = Flask(__name__)
 CORS(app)
@@ -130,7 +130,7 @@ class ModelSingleton:
                 if not cls._instance:
                     cls._instance = super(ModelSingleton, cls).__new__(cls, *args, **kwargs)
                     cls._instance.model = cls._load_model()
-                    cls._instance.graph = tf.compat.v1.get_default_graph()
+                    # cls._instance.graph = tf.compat.v1.get_default_graph()
         return cls._instance
 
     @staticmethod
@@ -143,8 +143,8 @@ class ModelSingleton:
         return model
 
     def predict(self, processed_image):
-        with self.graph.as_default():
-            predictions = self.model.predict(processed_image)
+        # with self.graph.as_default():
+        predictions = self.model.predict(processed_image)
         return predictions
 
 # Initialize the model singleton
