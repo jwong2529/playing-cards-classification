@@ -64,10 +64,10 @@ def predict():
     
     if file.filename == '':
         print("No file selected")
-        return jsonify({'error': 'No file selected'}), 400
+        return jsonifys({'error': 'No file selected'}), 400
     
-    # # preprocess the image
-    # processed_image = preprocess_image(file.read())
+    # preprocess the image
+    processed_image = preprocess_image(file.read())
     
     # # Predict
     # print("Making prediction...")
