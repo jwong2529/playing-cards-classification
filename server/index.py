@@ -8,7 +8,7 @@ from PIL import Image
 from io import BytesIO
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://playing-cards-classifier.vercel.app"}})
 
 print(tf.__version__)
 
