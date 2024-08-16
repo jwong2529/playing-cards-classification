@@ -1,6 +1,26 @@
 import os
+import json
+from pathlib import Path
+
+# Check if the app is running on Render
 if os.getenv('RENDER') == 'true':
-    os.environ['KERAS_BACKEND'] = 'theano'
+    # Define the .keras directory path
+    keras_dir = Path.home() / ".keras"
+    keras_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Define the path to the keras.json file
+    keras_json_path = keras_dir / "keras.json"
+    
+    # Write the configuration to use Theano as the backend
+    keras_config = {
+        "floatx": "float32",
+        "epsilon": 1e-07,
+        "backend": "theano",
+        "image_data_format": "channels_last"
+    }
+    
+    with open(keras_json_path, 'w') as keras_json_file:
+        json.dump(keras_config, keras_json_file)
 
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
