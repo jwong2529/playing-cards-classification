@@ -72,7 +72,7 @@ def predict():
         return jsonify({'error': 'No file selected'}), 400
     
     # preprocess the image
-    processed_image = preprocess_image(file.read())
+    # processed_image = preprocess_image(file.read())
     
     try :
         result = model_manager.predict(file.read())
