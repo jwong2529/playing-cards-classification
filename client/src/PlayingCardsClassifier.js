@@ -79,6 +79,7 @@ const PhotoUploadOrCapture = ({ onImageSubmit, onOpenCamera }) => {
             <Camera
               ref={cameraRef}
               aspectRatio={5 / 3}  // Adjust aspect ratio if needed
+              facingMode='environment'
               style={{ width: '100%', height: '100%'}}
             />
           </div>
