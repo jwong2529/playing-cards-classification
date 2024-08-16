@@ -21,7 +21,6 @@ with open('playing-cards-model.json', 'r') as json_file:
 
 model = model_from_json(model_json)
 model.load_weights('playing-cards-model_weights.h5')
-print('testing model:', model.predict(np.zeros((1, 299, 299, 3))))
 
 IMG_SIZE = (128, 128)  
 
@@ -91,4 +90,4 @@ if __name__ == '__main__':
     import os
     port = int(os.environ.get('PORT', 10000))  # default to 10000 if PORT is not set
     print(f"Server is running on port {port}...")
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port, debug=False, threaded=False)
