@@ -16,7 +16,6 @@ if os.getenv('RENDER') == 'true':
         "floatx": "float32",
         "epsilon": 1e-07,
         "backend": "theano",
-        "image_data_format": "channels_last"
     }
     
     with open(keras_json_path, 'w') as keras_json_file:
