@@ -112,13 +112,15 @@ const PlayingCardsClassifier = () => {
     const formData = new FormData();
     formData.append('file', file);
 
-    try {
-      const response = await axios.post('https://playing-cards-classifier.onrender.com/predict', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setResponse(response.data);
+  try {
+    const response = await axios.post('http://localhost:10000/predict', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    const { prediction, confidence } = response.data;
+    const roundedConfidence = confidence.toFixed(2);
+    setResponse(`Prediction: ${prediction}, Confidence: ${roundedConfidence}`);
     } catch (error) {
       console.error('Error uploading file:', error);
     }
