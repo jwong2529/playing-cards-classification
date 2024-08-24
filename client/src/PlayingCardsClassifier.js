@@ -48,10 +48,10 @@ const PhotoUploadOrCapture = ({ onImageSubmit, onOpenCamera }) => {
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <BrowserView>
-        <Typography variant="subtitle2" gutterBottom>
+      <Typography variant="subtitle2" gutterBottom>
             Hold the card close and fill the camera frame for best results.
-        </Typography>
+      </Typography>
+      <BrowserView>
         <Stack direction="row" spacing={2}>
           <Button onClick={handleOpenCamera} variant="outlined">Open Camera to Capture Image</Button>
           <Button onClick={() => document.getElementById('file-upload').click()} variant="outlined">
